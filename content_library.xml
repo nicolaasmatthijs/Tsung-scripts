@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/opt/local/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="notice" version="1.0" dumptraffic="false">
+  <clients>
+    <client host="localhost" use_controller_vm="true" maxusers="100000"/>
+  </clients>
+  
+  <servers>
+    <server host="127.0.0.1" port="2001" type="tcp"/>
+  </servers>
+
+  <load>
+   <arrivalphase phase="1" duration="30" unit="second">
+     <users arrivalrate="1" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="2" duration="30" unit="second">
+     <users arrivalrate="2" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="3" duration="30" unit="second">
+     <users arrivalrate="4" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="4" duration="30" unit="second">
+     <users arrivalrate="8" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="5" duration="30" unit="second">
+     <users arrivalrate="16" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="6" duration="30" unit="second">
+     <users arrivalrate="32" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="7" duration="30" unit="second">
+     <users arrivalrate="64" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="8" duration="30" unit="second">
+     <users arrivalrate="128" unit="second"/>
+   </arrivalphase>
+   <arrivalphase phase="9" duration="30" unit="second">
+     <users arrivalrate="256" unit="second"/>
+   </arrivalphase>
+  </load>
+
+  <options>
+   <option type="ts_http" name="user_agent">
+    <user_agent probability="80">Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.7.8) Gecko/20050513 Galeon/1.3.21</user_agent>
+    <user_agent probability="20">Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4</user_agent>
+   </option>
+   <option name="file_server" id="usersdb" value="./csv/users.csv"/>
+  </options>
+
+  <sessions>
+    <session name="users" probability="100" type="ts_http">
+  
+      <setdynvars sourcetype="file" fileid="usersdb" delimiter="," order="iter">
+        <var name="users_username"/>
+        <var name="users_pw"/>
+        <var name="users_group_a"/>
+        <var name="content_manager"/>
+        <var name="content_viewer"/>
+      </setdynvars>
+
+      <transaction name="tx_me">
+          <request><http url="/api/me" method="GET" version="1.1"/></request>
+      </transaction>
+
+      <!-- <thinktime value="5" random="true"/>
+      <transaction name="tx_login">
+        <request subst="true">
+          <http url="/api/auth/login" method="POST" version="1.1" contents="username=%%_users_username%%&amp;password=%%_users_pw%%"/>
+        </request>
+        <request><http url="/api/me" method="GET" version="1.1"/></request>
+      </transaction> -->
+      
+     <!-- <thinktime value="5" random="true"/>
+      <transaction name="tx_user_library">
+        <request subst="true">
+          <dyn_variable name="content_id" jsonpath="$.results[0].contentId"/>
+          <http url="/api/content/library/u:cam:%%_users_username%%" method="GET" version="1.1"/>
+        </request>
+      </transaction>
+
+     <thinktime value="3" random="true"/>
+      <transaction name="tx_user_content">
+          <request><http url="/api/me" method="GET" version="1.1"/></request>
+        <request subst="true">
+          <http url="/api/content/%%_content_id%%" method="GET" version="1.1"/>
+        </request>
+      </transaction>
+      
+      <thinktime value="10" random="true"/>
+      <transaction name="tx_user_library">
+          <request><http url="/api/me" method="GET" version="1.1"/></request>
+        <request subst="true">
+          <dyn_variable name="content_id" jsonpath="$.results[1].contentId"/>
+          <http url="/api/content/library/u:cam:%%_users_username%%" method="GET" version="1.1"/>
+        </request>
+      </transaction>
+
+     <thinktime value="3" random="true"/>
+      <transaction name="tx_user_content">
+          <request><http url="/api/me" method="GET" version="1.1"/></request>
+        <request subst="true">
+          <http url="/api/content/%%_content_id%%" method="GET" version="1.1"/>
+        </request>
+      </transaction> -->
+      
+      <thinktime value="15" random="true"/>
+      <transaction name="tx_logout">
+        <!-- <request><http url="/api/auth/logout" method="POST" version="1.1" /></request> -->
+        <request><http url="/api/me" method="GET" version="1.1"/></request>
+      </transaction>
+
+      </session>
+ </sessions>
+</tsung>
